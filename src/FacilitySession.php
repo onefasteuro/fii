@@ -129,6 +129,17 @@ class FacilitySession
         return $courses_list;
     }
 
+    /**
+     *
+     * get our courses list
+     *
+     * @return mixed
+     */
+    public function courses()
+    {
+        return $this->courses;
+    }
+
     public function persist()
     {
         //clean the records

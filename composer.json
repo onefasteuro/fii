@@ -1,0 +1,19 @@
+{
+  "name": "onefasteuro/fii",
+  "type": "library",
+  "license": "MIT",
+  "description": "FII Site crawler",
+  "keywords": ["laravel"],
+  "require": {
+    "composer/installers": "~1.0",
+    "php": ">=5.4.0",
+    "sunra/php-simple-html-dom-parser": "^1.5",
+    "rmccue/requests": "^1.0",
+    "nesbot/carbon": "^1.0"
+  },
+  "autoload" : {
+    "psr-4" : {
+      "FII\\" : "src/"
+    }
+  }
+}

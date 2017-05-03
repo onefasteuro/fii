@@ -7,7 +7,7 @@ class ServiceProvider extends \WPBootstrapper\Providers\AbstractServiceProvider
 {
     public function boot()
     {
-
+        // intentionally left blank
     }
 
     public function register()

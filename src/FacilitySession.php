@@ -9,7 +9,7 @@ use Illuminate\Support\Collection;
 
 class FacilitySession
 {
-    
+
     protected $session;
     protected $courses;
 

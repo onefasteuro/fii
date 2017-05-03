@@ -9,22 +9,28 @@ use Requests_Session;
 class Provider
 {
     protected $session;
-    protected $auth;
+    protected $config;
     protected $cache;
 
-    public function __construct($config, $cache, $db)
+    public function __construct($config, $cache)
     {
-        $this->auth = $config;
+        $this->config = $config;
         $this->cache = $cache;
-        //start the session
-        $this->init();
     }
 
+
+    /**
+     *
+     * Starts our browsing session on the site
+     *
+     * @param $as
+     * @return Requests_Session
+     */
     public function init($as)
     {
-        $session = new Requests_Session('https://extranet.freedivinginstructors.com');
-        $session->user_agent = 'Mozilla/5.0 (Linux; U; Android 4.1.1; en-gb; Build/KLP) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Safari/534.30';
-        $session->post('/app/login-check.php', [], $this->auth[$as]);
+        $session = new Requests_Session($this->config['base_url']);
+        $session->user_agent = $this->config['user_agent'];
+        $session->post('/app/login-check.php', [], $this->config[$as]);
         return $session;
     }
 

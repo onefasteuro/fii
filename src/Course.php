@@ -30,7 +30,7 @@ Class Course extends \Illuminate\Database\Eloquent\Model {
     {
         $cache = container('cache');
 
-        $key = wpbootstrap_create_cache_key(__CLASS__, __FUNC__, $level);
+        $key = wpbootstrap_create_cache_key(__CLASS__, __FUNCTION__, $level);
         $response = $cache->remember($key, CACHE_WEEK, function() use(&$level) {
             return static::orderBy('start_date', 'DESC')->where('course_level_id', '=', $level)->get();
         });

@@ -7,6 +7,12 @@ Class Course extends \Illuminate\Database\Eloquent\Model {
    protected $table = 'courses';
 
 
+    public static function getCourseById($id)
+    {
+        // TODO: implement cache
+        return static::where('fii_course_id', '=', $id)->first();
+    }
+
     public static function getAllCoursesCacheKey()
     {
         return wpbootstrap_create_cache_key('FII_Course_GetCourses');

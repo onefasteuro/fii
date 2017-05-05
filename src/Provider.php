@@ -40,24 +40,9 @@ class Provider
         }
     }
 
-    public function getCourse($id)
-    {
-
-    }
-
-    public function getCourses()
-    {
-        $key = Course::getCacheKey();
-        $response = $this->cache->remember($key, CACHE_WEEK, function(){
-            return Course::orderBy('start_date', 'DESC')->get();
-        });
-        return $response;
-    }
-
-
     public function cache($data)
     {
-        $key = Course::getCacheKey();
+        $key = Course::getAllCoursesCacheKey();
         $this->cache->put($key, $data, CACHE_WEEK);
     }
 }

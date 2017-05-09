@@ -30,12 +30,13 @@ class FacilitySession
         return ($this->crawl_url_type) == 'instructor' ? true : false;
     }
 
-    protected static function createNewCourse($id)
+    protected static function createNewCourse($course)
     {
         $model = new Course;
 
-        $model->fii_course_id = $id;
-        $model->url = 'https://extranet.freedivinginstructors.com/app/public/signup.php?idcourse='.$id.'&isregistered=n';
+        $model->fii_course_id = $course['id'];
+        $model->instructor = $course['instructor'];
+        $model->url = 'https://extranet.freedivinginstructors.com/app/public/signup.php?idcourse='.$course['id'].'&isregistered=n';
 
         //fetch the location
         $model->location = "2424 N. Federal Highway,\nPompano Beach, FL";
@@ -63,7 +64,12 @@ class FacilitySession
         //get the courses id
         foreach($dashboard as $row) {
             $id = $row->getAttribute('id');
-            $courses->push(str_replace('trcourse', '', $id));
+            $id = str_replace('trcourse', '', $id);
+            $instructor = wpbootsrap_replace_multiple_spaces($row->children[4]->text());
+            $instructor = str_replace(['Not Confirmed', 'Confirmed', 'Not'], '', $instructor);
+            $instructor = trim($instructor);
+            $array = ['id' => $id, 'instructor' => $instructor];
+            $courses->push($array);
         }
 
         if($this->isInstructorCourse()) {
@@ -118,7 +124,7 @@ class FacilitySession
         $courses_list = new Collection;
 
         $courses->each(function($course) use($session, $courses_list, $location_dom){
-            $course_page = $session->get('/app/F/course.php?idcourse='.$course);
+            $course_page = $session->get('/app/F/course.php?idcourse='.$course['id']);
 
             $course_dom = HtmlDomParser::str_get_html($course_page->body);
 
@@ -144,18 +150,6 @@ class FacilitySession
             $end_node = $course_dom->find('input[name="end"]');
             $end_date = $end_node[0]->getAttribute('value');
 
-            $instructor_node = $course_dom->find('#instructortext');
-            $instructor = $instructor_node[0]->text();
-            $instructor = wpbootsrap_replace_multiple_spaces($instructor);
-            preg_match('/\#[0-9]+/', $instructor, $matches);
-            if(count($matches) > 0) {
-                $instructor_id = str_replace('#', '', $matches[0]);
-            }
-            else {
-                $instructor_id = 0;
-            }
-
-
             $level_node = $course_dom->find('select[name="idclasslevel"] > option');
             foreach($level_node as $l) {
                 if($l->getAttribute('selected') == true) {
@@ -171,7 +165,6 @@ class FacilitySession
             $model->start_date = new Carbon($start_date);
             $model->end_date = new Carbon($end_date);
             $model->title = ($optional_title !== '') ? $optional_title : $level_label;
-            $model->instructor = $instructor_id;
 
             $model->description = (isset($desc)) ? $desc : '';
             $model->tuition_fee = $price;

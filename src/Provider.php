@@ -16,6 +16,15 @@ class Provider
         $this->cache = $cache;
     }
 
+    public function persist($courses)
+    {
+        //clean the records
+        Course::truncate();
+        $courses->each(function($course){
+            $course->save();
+        });
+        return $this;
+    }
 
     /**
      *
@@ -32,11 +41,11 @@ class Provider
         switch($as) {
             case 'F':
                 return new FacilitySession($session);
-            break;
+                break;
 
             case 'I':
                 return new InstructorSession($session);
-            break;
+                break;
         }
     }
 

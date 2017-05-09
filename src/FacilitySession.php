@@ -11,7 +11,13 @@ class FacilitySession
 {
 
     protected $session;
-    protected $courses;
+
+    //which side are we crawling?
+    protected $crawl_url_type = 'facility';
+    protected $crawl_url = [
+        'facility' => '/app/F/courselist.php?createdby=2',
+        'instructor' => '/app/F/courselist.php?createdby=1'
+    ];
 
     public function __construct($session)
     {
@@ -19,42 +25,100 @@ class FacilitySession
     }
 
 
-    public function setCourses(Collection $courses)
+    protected function isInstructorCourse()
     {
-        $this->courses = $courses;
-        return $this;
+        return ($this->crawl_url_type) == 'instructor' ? true : false;
+    }
+
+    protected static function createNewCourse($id)
+    {
+        $model = new Course;
+
+        $model->fii_course_id = $id;
+        $model->url = 'https://extranet.freedivinginstructors.com/app/public/signup.php?idcourse='.$id.'&isregistered=n';
+
+        //fetch the location
+        $model->location = "2424 N. Federal Highway,\nPompano Beach, FL";
+        return $model;
     }
 
 
-
+    public function setCrawlUrl($type) {
+        $this->crawl_url_type = $type;
+        return $this;
+    }
 
     public function crawl()
     {
         $session = $this->session;
 
-        $courses_page = $session->get('/app/F/courselist.php');
+        $courses_page = $session->get($this->crawl_url[$this->crawl_url_type]);
         $dom = HtmlDomParser::str_get_html($courses_page->body);
         $dashboard = $dom->find('#dashboard .tableG > tr');
         unset($dashboard[0]);
 
+
         $courses = new Collection;
 
+        //get the courses id
         foreach($dashboard as $row) {
             $id = $row->getAttribute('id');
             $courses->push(str_replace('trcourse', '', $id));
         }
 
+        if($this->isInstructorCourse()) {
+            return $this->parseInstructorDashboard($dashboard, $courses);
+        }
+        else {
+            return $this->parseFacilityDashboard($dashboard, $courses);
+        }
+    }
+
+    private function parseInstructorDashboard($dashboard, Collection $courses)
+    {
+        $session = $this->session;
+
+        $courses_list = new Collection;
+
+
+        foreach($dashboard as $k => $v) {
+            foreach($v->children as $c => $child){
+                switch($c) {
+                    case 1:
+                        $id = wpbootsrap_replace_multiple_spaces($child->text());
+                        break;
+                    case 2:
+                        $level = wpbootsrap_replace_multiple_spaces($child->text());
+                        break;
+                    case 4:
+                        $instructor = wpbootsrap_replace_multiple_spaces($child->text());
+                        break;
+                    case 6:
+                        $start_date = wpbootsrap_replace_multiple_spaces($child->text());
+                        break;
+                    case 7:
+                        $max_capacity = wpbootsrap_replace_multiple_spaces($child->text());
+                        break;
+                    case 8:
+                        $vacancy = wpbootsrap_replace_multiple_spaces($child->text());
+                        break;
+                }
+            }
+        }
+
+    }
+
+    private function parseFacilityDashboard($dashboard, Collection $courses)
+    {
+        $session = $this->session;
+
         $location_page = $session->get('/app/F/instructoredit.php');
         $location_dom = HtmlDomParser::str_get_html($location_page->body);
 
-
-        $courses_list = new \Illuminate\Support\Collection;
+        $courses_list = new Collection;
 
         $courses->each(function($course) use($session, $courses_list, $location_dom){
             $course_page = $session->get('/app/F/course.php?idcourse='.$course);
-
-            //link doesnt work, go away
-            if(trim($course_page->body) == 'error') return;
 
             $course_dom = HtmlDomParser::str_get_html($course_page->body);
 
@@ -82,7 +146,7 @@ class FacilitySession
 
             $instructor_node = $course_dom->find('#instructortext');
             $instructor = $instructor_node[0]->text();
-            $instructor = preg_replace('/\s+/', '', $instructor);
+            $instructor = wpbootsrap_replace_multiple_spaces($instructor);
             preg_match('/\#[0-9]+/', $instructor, $matches);
             if(count($matches) > 0) {
                 $instructor_id = str_replace('#', '', $matches[0]);
@@ -101,52 +165,23 @@ class FacilitySession
                 }
             }
 
-            $model = new Course;
-            $model->fii_course_id = $course;
+            $model = static::createNewCourse($course);
+
             $model->course_level_id = $level_value;
+            $model->start_date = new Carbon($start_date);
+            $model->end_date = new Carbon($end_date);
             $model->title = ($optional_title !== '') ? $optional_title : $level_label;
             $model->instructor = $instructor_id;
-
-            //fetch the location
-            $model->location = "2424 N. Federal Highway,\nPompano Beach, FL";
-
-            //ends location fetch
 
             $model->description = (isset($desc)) ? $desc : '';
             $model->tuition_fee = $price;
             $model->boat_fee = 0;
             $model->max_capacity = $max_capacity;
             $model->vacancy = $vacancy;
-            $model->instructor = '';
-            $model->start_date = new Carbon($start_date);
-            $model->end_date = new Carbon($end_date);
-            $model->url = 'https://extranet.freedivinginstructors.com/app/public/signup.php?idcourse='.$course.'&isregistered=n';
+
             $courses_list->push($model);
         });
 
-        $this->setCourses($courses_list);
-
         return $courses_list;
-    }
-
-    /**
-     *
-     * get our courses list
-     *
-     * @return mixed
-     */
-    public function courses()
-    {
-        return $this->courses;
-    }
-
-    public function persist()
-    {
-        //clean the records
-        Course::truncate();
-        $this->courses->each(function($course){
-            $course->save();
-        });
-        return $this;
     }
 }

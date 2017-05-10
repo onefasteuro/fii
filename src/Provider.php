@@ -26,6 +26,14 @@ class Provider
         return $this;
     }
 
+
+    public function public()
+    {
+        $session = new Requests_Session('http://freedivinginstructors.com/fii');
+        return new PublicSession($session);
+
+    }
+
     /**
      *
      * Starts our browsing session on the site

@@ -1,6 +1,6 @@
 <?php
 
-namespace FII;
+namespace FII\Models;
 
 Class CourseReview extends \Illuminate\Database\Eloquent\Model {
 

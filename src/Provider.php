@@ -27,35 +27,40 @@ class Provider
     }
 
 
-    public function public()
+
+    /*
+     *
+     * Base site crawling session
+     *
+     */
+    public function site()
     {
         $session = new Requests_Session('http://freedivinginstructors.com/fii');
-        return new PublicSession($session);
+        return new Session($session);
 
     }
 
-    /**
+    /*
      *
-     * Starts our browsing session on the site
+     * Facility Session
      *
-     * @param $as
-     * @return Requests_Session
      */
-    public function session($as)
+    public function facility()
     {
         $session = new Requests_Session($this->config['base_url']);
         $session->user_agent = $this->config['user_agent'];
-        $session->post('/app/login-check.php', [], $this->config[$as]);
-        switch($as) {
-            case 'F':
-                return new FacilitySession($session);
-                break;
-
-            case 'I':
-                return new InstructorSession($session);
-                break;
-        }
+        $session->post('/app/login-check.php', [], $this->config['F']);
+        return new Session($session);
     }
+
+    public function instructor()
+    {
+        $session = new Requests_Session($this->config['base_url']);
+        $session->user_agent = $this->config['user_agent'];
+        $session->post('/app/login-check.php', [], $this->config['I']);
+        return new Session($session);
+    }
+
 
     public function cache($data, $key)
     {

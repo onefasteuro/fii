@@ -2,24 +2,24 @@
 
 namespace FII;
 
-use Sunra\PhpSimple\HtmlDomParser;
-use Carbon\Carbon;
-use Requests_Session;
+use FII\Models\CourseReview;
 
-class PublicSession
+Class Testimonials
 {
 
-    protected $session;
+    protected $dom;
 
-    public function __construct($session)
+    protected $output;
+
+    public function __construct($dom)
     {
-        $this->session = $session;
+        $this->dom = $dom;
     }
 
-    protected function parseTestimonials($dom, ReviewCollection $reviews)
+    public function parse()
     {
         $comments_list = $dom->find('#comment-list');
-
+        $reviews = [];
         foreach($comments_list as $k => $node)
         {
             $child = $node->find('li')[0];
@@ -49,35 +49,18 @@ class PublicSession
             $name = str_replace('verified student', '', $name);
             $name = wpbootsrap_replace_multiple_spaces($name);
 
+            //create our model and populates variables
             $review = new CourseReview;
             $review->name = $name;
             $review->rating = $rating;
             $review->for_instructor = $instructor;
             $review->feedback = $feedback;
             $review->date = $date;
-            $reviews->push($review);
-        }
-    }
 
-    public function testimonials()
-    {
-        $count = 1;
-        $reviews = new ReviewCollection;
-        do {
-            $html = $this->crawl('/fii/testimonials/page:'.$count);
-            $dom = HtmlDomParser::str_get_html($html->body);
-            $this->parseTestimonials($dom, $reviews);
-            $count++;
+            $reviews[] = $review;
         }
-        while($html->status_code == 200);
 
         return $reviews;
     }
 
-
-    public function crawl($endpoint)
-    {
-        $session = $this->session;
-        return $this->session->get($endpoint);
-    }
 }

@@ -1,6 +1,7 @@
 <?php
 
-namespace FII;
+namespace FII\Collections;
+
 
 use Illuminate\Support\Collection;
 

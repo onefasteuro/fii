@@ -42,8 +42,6 @@ Class Course extends \Illuminate\Database\Eloquent\Model {
         return $response;
     }
 
-
-
     public function getUrlAttribute()
     {
         return 'https://extranet.freedivinginstructors.com/app/public/signup.php?idcourse='.$this->fii_course_id.'&isregistered=n';

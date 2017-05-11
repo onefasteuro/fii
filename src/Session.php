@@ -3,6 +3,7 @@
 namespace FII;
 use Requests_Session;
 
+
 class Session
 {
     protected $session;
@@ -16,6 +17,6 @@ class Session
     public function crawl($endpoint)
     {
         $dom = $this->session->get($endpoint);
-        return \HtmlDomParser::str_get_html($dom);
+        return $dom;
     }
 }

@@ -6,7 +6,6 @@ Class Course extends \Illuminate\Database\Eloquent\Model {
 
    protected $table = 'courses';
 
-
     public static function getCourseById($id)
     {
         // TODO: implement cache
@@ -15,7 +14,7 @@ Class Course extends \Illuminate\Database\Eloquent\Model {
 
     public static function cacheKey()
     {
-        return wpbootstrap_create_cache_key('FII_CourseCollection');
+        return md5(__CLASS__.__FUNCTION__);
     }
 
 
@@ -41,5 +40,12 @@ Class Course extends \Illuminate\Database\Eloquent\Model {
             return static::orderBy('start_date', 'DESC')->where('course_level_id', '=', $level)->get();
         });
         return $response;
+    }
+
+
+
+    public function getUrlAttribute()
+    {
+        return 'https://extranet.freedivinginstructors.com/app/public/signup.php?idcourse='.$this->fii_course_id.'&isregistered=n';
     }
 }

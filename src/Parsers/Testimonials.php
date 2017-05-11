@@ -1,23 +1,17 @@
 <?php
 
-namespace FII;
+namespace FII\Parsers;
 
 use FII\Models\CourseReview;
+use Sunra\PhpSimple\HtmlDomParser;
 
 Class Testimonials
 {
 
-    protected $dom;
-
-    protected $output;
-
-    public function __construct($dom)
+    public static function parse($__dom)
     {
-        $this->dom = $dom;
-    }
+        $dom = HtmlDomParser::str_get_html($__dom);
 
-    public function parse()
-    {
         $comments_list = $dom->find('#comment-list');
         $reviews = [];
         foreach($comments_list as $k => $node)

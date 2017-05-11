@@ -1,22 +1,17 @@
 <?php
 
-namespace FII;
+namespace FII\Parsers;
 
-Class Testimonials
+use Carbon\Carbon;
+use FII\Models\Course;
+use Sunra\PhpSimple\HtmlDomParser;
+
+Class FacilityCourse
 {
 
-    protected $dom;
-
-    protected $output;
-
-    public function __construct($dom)
+    public static function parse($__dom)
     {
-        $this->dom = $dom;
-    }
-
-    public function parse()
-    {
-        $course_dom = HtmlDomParser::str_get_html($course_page->body);
+        $course_dom = HtmlDomParser::str_get_html($__dom);
 
         $price_node = $course_dom->find('input[name="tuitionfee"]');
         $price = $price_node[0]->getAttribute('value');
@@ -49,8 +44,7 @@ Class Testimonials
             }
         }
 
-        $model = static::createNewCourse($course);
-
+        $model = new Course;
         $model->course_level_id = $level_value;
         $model->start_date = new Carbon($start_date);
         $model->end_date = new Carbon($end_date);
@@ -62,7 +56,7 @@ Class Testimonials
         $model->max_capacity = $max_capacity;
         $model->vacancy = $vacancy;
 
-        $courses_list->push($model);
+        return $model;
     }
 
 }

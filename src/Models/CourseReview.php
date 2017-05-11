@@ -4,12 +4,12 @@ namespace FII\Models;
 
 Class CourseReview extends \Illuminate\Database\Eloquent\Model {
 
-   protected $table = 'courses_reviews';
+   protected $table = 'course_reviews';
 
 
     public static function cacheKey()
     {
-        return wpbootstrap_create_cache_key('FII_ReviewCollection');
+        return md5(__CLASS__.__FUNCTION__);
     }
 
 }

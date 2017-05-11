@@ -13,9 +13,9 @@ Class Course extends \Illuminate\Database\Eloquent\Model {
         return static::where('fii_course_id', '=', $id)->first();
     }
 
-    public static function getAllCoursesCacheKey()
+    public static function cacheKey()
     {
-        return wpbootstrap_create_cache_key('FII_Course_GetCourses');
+        return wpbootstrap_create_cache_key('FII_CourseCollection');
     }
 
 

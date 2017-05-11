@@ -57,9 +57,8 @@ class Provider
         }
     }
 
-    public function cache($data)
+    public function cache($data, $key)
     {
-        $key = Course::getAllCoursesCacheKey();
         $this->cache->put($key, $data, CACHE_WEEK);
     }
 }

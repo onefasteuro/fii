@@ -22,7 +22,7 @@ Class Course extends \Illuminate\Database\Eloquent\Model {
     {
         $cache = container('cache');
 
-        $key = static::getAllCoursesCacheKey();
+        $key = static::cacheKey();
         $response = $cache->remember($key, CACHE_WEEK, function(){
             return static::orderBy('start_date', 'DESC')->get();
         });

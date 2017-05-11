@@ -13,7 +13,7 @@ Class CourseReview extends \Illuminate\Database\Eloquent\Model {
     }
 
 
-    public function getReviews()
+    public static function getReviews()
     {
         $data = remember(static::cacheKey(), CACHE_WEEK, function(){
             return static::all();

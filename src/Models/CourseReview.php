@@ -12,4 +12,13 @@ Class CourseReview extends \Illuminate\Database\Eloquent\Model {
         return md5(__CLASS__.__FUNCTION__);
     }
 
+
+    public function getReviews()
+    {
+        $data = remember(static::cacheKey(), CACHE_WEEK, function(){
+            return static::all();
+        });
+        return $data;
+    }
+
 }

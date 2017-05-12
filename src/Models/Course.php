@@ -49,6 +49,7 @@ Class Course extends \Illuminate\Database\Eloquent\Model {
         $response = $cache->remember($key, CACHE_WEEK, function() use(&$level) {
             return static::orderBy('start_date', 'DESC')->where('course_level_id', '=', $level)->get();
         });
+        $response = apply_filters('fii_courses_by_level_collection', $response);
         return $response;
     }
 

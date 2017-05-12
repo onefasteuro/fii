@@ -7,6 +7,12 @@ Class CourseReview extends \Illuminate\Database\Eloquent\Model {
     protected $table = 'course_reviews';
 
 
+    public function newCollection(array $models = [])
+    {
+        return new ReviewCollection($models);
+    }
+
+
     public static function cacheKey()
     {
         return md5(__CLASS__.__FUNCTION__);

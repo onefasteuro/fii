@@ -11,6 +11,7 @@ Class Course extends \Illuminate\Database\Eloquent\Model {
 
     public function newCollection(array $models = [])
     {
+        $models = apply_filters('fii_new_courses_collection', $models);
         return new CourseCollection($models);
     }
 
@@ -35,7 +36,7 @@ Class Course extends \Illuminate\Database\Eloquent\Model {
         $response = $cache->remember($key, CACHE_WEEK, function(){
             return static::orderBy('start_date', 'DESC')->get();
         });
-        return apply_filters('fii_available_date', $response);
+        return $response;
     }
 
 

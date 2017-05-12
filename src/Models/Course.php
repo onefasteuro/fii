@@ -57,4 +57,18 @@ Class Course extends \Illuminate\Database\Eloquent\Model {
     {
         return  apply_filters('fii_course_url', 'https://extranet.freedivinginstructors.com/app/public/signup.php?idcourse='.$this->fii_course_id.'&isregistered=n');
     }
+
+    /**
+     *
+     * Json encoding
+     *
+     * @param int $options
+     * 
+     */
+    public function toJson($options = 0)
+    {
+        $data = $this->toArray();
+        $data = apply_filters('fii_course_json', $data);
+        return json_encode($data, $options);
+    }
 }

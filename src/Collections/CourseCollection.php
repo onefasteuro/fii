@@ -12,4 +12,5 @@ Class CourseCollection extends Collection
         return md5(__CLASS__.__FUNCTION__);
     }
 
+
 }

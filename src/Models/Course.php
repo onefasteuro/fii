@@ -14,7 +14,8 @@ Class Course extends \Illuminate\Database\Eloquent\Model {
 
     public static function cacheKey()
     {
-        return md5(__CLASS__.__FUNCTION__);
+        $args = func_get_args();
+        return md5(__CLASS__.__FUNCTION__.implode($args));
     }
 
 
@@ -26,7 +27,7 @@ Class Course extends \Illuminate\Database\Eloquent\Model {
         $response = $cache->remember($key, CACHE_WEEK, function(){
             return static::orderBy('start_date', 'DESC')->get();
         });
-        return $response;
+        return apply_filters('fii_available_date', $response);
     }
 
 
@@ -44,6 +45,6 @@ Class Course extends \Illuminate\Database\Eloquent\Model {
 
     public function getUrlAttribute()
     {
-        return 'https://extranet.freedivinginstructors.com/app/public/signup.php?idcourse='.$this->fii_course_id.'&isregistered=n';
+        return  apply_filters('fii_course_url', 'https://extranet.freedivinginstructors.com/app/public/signup.php?idcourse='.$this->fii_course_id.'&isregistered=n');
     }
 }

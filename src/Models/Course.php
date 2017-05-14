@@ -9,11 +9,6 @@ Class Course extends \Illuminate\Database\Eloquent\Model {
    protected $table = 'courses';
 
 
-    public function newCollection(array $models = [])
-    {
-        return new CourseCollection($models);
-    }
-
     public static function getCourseById($id)
     {
         // TODO: implement cache

@@ -6,12 +6,6 @@ Class CourseReview extends \Illuminate\Database\Eloquent\Model {
 
     protected $table = 'course_reviews';
 
-
-    public function newCollection(array $models = [])
-    {
-        return new ReviewCollection($models);
-    }
-
     public static function getLatestEntry($date)
     {
         return static::where('date', '>', $date)->first();

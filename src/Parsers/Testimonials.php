@@ -51,6 +51,9 @@ Class Testimonials
             $review->feedback = $feedback;
             $review->date = $date;
 
+            //review source
+            $review->source = 'fii';
+
             $reviews[] = $review;
         }
 

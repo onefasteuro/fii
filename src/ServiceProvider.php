@@ -13,7 +13,7 @@ class ServiceProvider extends \WPBootstrapper\Providers\AbstractServiceProvider
     public function register()
     {
         $this->container->singleton('fii', function($container){
-            $config = $container->make('config')->get('fii');
+            $config = $container->make('config')->get('services.fii');
             $cache = $container->make('cache');
             $provider = new Provider($config, $cache);
             return $provider;

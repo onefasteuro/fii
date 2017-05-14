@@ -31,7 +31,8 @@ class Provider
         }
 
         if(preg_match('/review/i', $class)) {
-            CourseReview::truncate();
+            //delete FII reviews
+            CourseReview::where('source', '=', 'fii')->delete();
             $data->each(function($review){
                 $review->save();
             });
@@ -72,13 +73,5 @@ class Provider
         $session->user_agent = $this->config['user_agent'];
         $session->post('/app/login-check.php', [], $this->config['I']);
         return new Session($session);
-    }
-
-
-    public function cache($data)
-    {
-        $key = forward_static_call_array([$data, 'cacheKey'], []);
-        $this->cache->put($key, $data, CACHE_WEEK);
-        return $this;
     }
 }
